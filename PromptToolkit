@@ -5,6 +5,7 @@
 import os
 from ollama import Client
 from google.colab import userdata 
+os.environ["OLLAMA_API_KEY"] = userdata.get('OLLAMA_API_KEY')
 
 # Modulo 3
 # --- SETUP AMBIENTE ---
