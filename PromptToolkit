@@ -1,0 +1,75 @@
+# Modulo 1
+!pip install -q ollama pydantic
+
+# Modulo 2
+import os
+from ollama import Client
+from google.colab import userdata 
+
+# Modulo 3
+# --- SETUP AMBIENTE ---
+try:
+    os.environ['OLLAMA_API_KEY'] = userdata.get('OLLAMA_API_KEY')
+except:
+    print("⚠️ Chave não encontrada no segredos do Colab!")
+
+
+API_KEY = os.getenv('OLLAMA_API_KEY')
+MODEL_NAME = "gpt-oss:120b" 
+
+client = Client(
+    host="https://ollama.com",
+    headers={'Authorization': f'Bearer {API_KEY}'}
+)
+
+def consultar_llm(prompt, temp=0.3):
+    try:
+        return client.chat(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": prompt}],
+            options={"num_predict": 400, "temperature": temp},
+            stream=False
+        )['message']['content'].strip()
+    except Exception as e:
+        return f"Erro: {e}"
+
+# Modulo 4
+# --- TOOLKIT DE PROMPTING ---
+def toolkit_business(tarefa):
+    print(f"🛠️ Processando tarefa: {tarefa}\n")
+    
+    # Técnicas
+    prompts = {
+        "Zero-Shot": f"Execute esta tarefa: {tarefa}",
+        "Few-Shot": f"Exemplo: Criar logo -> Design visual de marca.\nTarefa: {tarefa}",
+        "Chain of Thought": f"{tarefa}. Pense passo a passo.",
+        "Persona": f"Como um CEO experiente, resolva: {tarefa}"
+    }
+    
+    resultados = {}
+    for tecnica, p in prompts.items():
+        print(f"⏳ Rodando {tecnica}...")
+        resultados[tecnica] = consultar_llm(p)
+    
+    # Recomendação Automática
+    comparativo = f"""
+    Analise os resultados abaixo e determine qual técnica foi melhor para a tarefa: '{tarefa}'.
+    
+    1. Zero-Shot: {resultados['Zero-Shot']}
+    2. Few-Shot: {resultados['Few-Shot']}
+    3. CoT: {resultados['Chain of Thought']}
+    4. Persona: {resultados['Persona']}
+    
+    Veredito: Qual técnica é a recomendada e por quê?
+    """
+    
+    recomendacao = consultar_llm(comparativo, temp=0.1)
+    return resultados, recomendacao
+
+# --- TESTE ---
+tarefa_teste = "Desenvolver um plano de fidelização para uma petshop"
+res, rec = toolkit_business(tarefa_teste)
+
+print("\n" + "="*30)
+print("🏆 RECOMENDAÇÃO FINAL:")
+print(rec)
