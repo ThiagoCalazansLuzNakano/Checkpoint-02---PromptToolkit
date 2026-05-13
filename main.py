@@ -3,30 +3,33 @@ import engine
 import utils
 
 def main():
-    tarefa = "Desenvolver um plano de fidelização para uma petshop"
-    client = config.get_client()
+    # 1. Setup
+    client = config.setup_ambiente()
+    TAREFA_TESTE = "Plano de expansão para uma pequena manufatura de móveis sustentáveis"
     
-    utils.exibir_cabecalho(tarefa)
+    # 2. Execução da Matriz
+    print(f"🚀 Iniciando Matriz de Teste para: {TAREFA_TESTE}\n")
+    resultados = engine.executar_matriz(client, TAREFA_TESTE)
     
-    # 1. Aplica técnicas
-    prompts = engine.obter_prompts(tarefa)
-    resultados = {}
+    # 3. Exibição
+    utils.imprimir_resultados(resultados)
     
-    for nome, p in prompts.items():
-        print(f"⏳ Processando {nome}...")
-        response = client.chat(model=config.MODEL_NAME, messages=[{"role": "user", "content": p}])
-        resultados[nome] = response['message']['content'].strip()
+    # 4. Recomendação (Juiz)
+    print("\n🤖 IA ANALISANDO A MELHOR COMBINAÇÃO...")
+    resumo = utils.formatar_resumo_juiz(resultados)
     
-    # 2. Mostra detalhes
-    utils.exibir_resultados(resultados)
+    prompt_juiz = f"""
+    Com base nas variações abaixo, recomende qual técnica e temperatura 
+    é a mais profissional para a tarefa: '{TAREFA_TESTE}'.
+    {resumo}
+    """
     
-    # 3. Recomendação
-    print("\n🏆 ANALISANDO MELHOR ABORDAGEM...")
-    prompt_final = engine.gerar_comparativo(tarefa, resultados)
-    recomendacao = client.chat(model=config.MODEL_NAME, messages=[{"role": "user", "content": prompt_final}])
+    veredito = engine.chamar_llm(client, prompt_juiz, temperature=0.2)
     
-    print("\n--- RECOMENDAÇÃO FINAL ---")
-    print(recomendacao['message']['content'].strip())
+    print("\n" + "🏆" * 15)
+    print("RECOMENDAÇÃO FINAL:")
+    print(veredito['texto'])
+    print("🏆" * 15)
 
 if __name__ == "__main__":
     main()
