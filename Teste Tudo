@@ -5,8 +5,8 @@ from google.colab import userdata
 
 # --- 1. CONFIGURAÇÃO DE AMBIENTE ---
 try:
-    os.environ['OLLAMA_API_KEY'] = userdata.get('OLLAMA_API_KEY')
-except Exception as e:
+    os.environ['OLLAMA_API_KEY'] = userdata.get('OLLAMA_API_KEY')#1-Entrar em secrets(a chavinha)->2-adicionar novo secrets;
+except Exception as e:                                           #->3-NOME=OLLAMA_API_KEY,VALOR=sua key apos fazer o login no ollama->4-e ativar acesso ao notebook
     print(f"⚠️ Erro ao carregar segredos: {e}")
 
 API_KEY = os.getenv('OLLAMA_API_KEY')
@@ -39,10 +39,10 @@ def executar_matriz_prompting(tarefa):
     print(f"🚀 Iniciando Matriz de Teste para: {tarefa}\n")
     
     tecnicas = {
-        "Zero-Shot": f"Tarefa: {tarefa}",
-        "Few-Shot": f"Exemplo: Analisar custos -> Relatório financeiro. Tarefa: {tarefa}",
-        "Chain of Thought": f"Tarefa: {tarefa}. Pense passo a passo.",
-        "Persona": f"Aja como um Consultor Sênior. Resolva: {tarefa}"
+        "Zero-Shot": f"Tarefa: {tarefa}",                                                  #Zero-shot
+        "Few-Shot": f"Exemplo: Analisar custos -> Relatório financeiro. Tarefa: {tarefa}", #Few-Shot
+        "Chain of Thought": f"Tarefa: {tarefa}. Pense passo a passo.",                     #CoT
+        "Persona": f"Aja como um Consultor Sênior. Resolva: {tarefa}"                      #Persona
     }
     
     # Temperaturas 
@@ -61,7 +61,7 @@ def executar_matriz_prompting(tarefa):
     return matriz_resultados
 
 # --- 4. EXECUÇÃO E EXIBIÇÃO ---
-TAREFA_TESTE = "Plano de expansão para uma pequena manufatura de móveis sustentáveis"
+TAREFA_TESTE = "Plano de expansão para uma pequena manufatura de móveis sustentáveis"     #Prompt
 resultados_finais = executar_matriz_prompting(TAREFA_TESTE)
 
 print("\n" + "="*70)
