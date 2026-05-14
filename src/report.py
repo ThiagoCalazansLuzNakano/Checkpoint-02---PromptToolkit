@@ -1,26 +1,42 @@
+import csv
 from src.llm_client import MODEL_NAME
-from src.evaluator import chamar_llm_com_metricas
+from src.evaluator import enviar_e_medir
 
-def imprimir_resultados(resultados_finais):
-    print("\n" + "="*70)
-    print("📈 RESULTADOS DA MATRIZ (TÉCNICA vs TEMPERATURA)")
-    print("="*70)
-    for tecnica, temps in resultados_finais.items():
-        print(f"\n▶️ TÉCNICA: {tecnica.upper()}")
-        for t_valor, dados in temps.items():
-            label = "CONSERVADOR" if t_valor == 0.1 else "EQUILIBRADO" if t_valor == 0.7 else "CRIATIVO"
-            print(f"[{t_valor} - {label}] | 📊 Tokens: {dados['tokens']}")
-            print(f"RESPOSTA: {dados['texto'][:150]}...")
-            print("." * 15)
+def salvar_csv_e_exibir(tarefa_nome, logs):
+    filename = f"output/resultados_{tarefa_nome}.csv"
+    
+    # Cria o arquivo CSV de métricas
+    with open(filename, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=["tecnica", "input_idx", "tokens", "tempo"])
+        writer.writeheader()
+        for log in logs:
+            writer.writerow({
+                "tecnica": log["tecnica"],
+                "input_idx": log["input_idx"],
+                "tokens": log["tokens"],
+                "tempo": log["tempo"]
+            })
+    print(f"   💾 Métricas de execucao salvas em: {filename}")
 
-def gerar_recomendacao(client, tarefa, resultados_finais):
-    print("\n🤖 IA ANALISANDO A MELHOR COMBINAÇÃO...")
-    resumo = ""
-    for t_nome, t_dados in resultados_finais.items():
-        resumo += f"\n- {t_nome} (Temp 0.7): {t_dados[0.7]['texto'][:200]}"
+def avaliar_e_escolher_vencedora(client, tarefa_nome, logs):
+    """Pede ao LLM analisar as execuções reais para eleger a melhor técnica para esta tarefa."""
+    resumo_casos = ""
+    for log in logs[:4]: # Pega uma amostra de cada técnica para avaliação rápida
+        resumo_casos += f"\nTecnica: {log['tecnica']}\nEsperado: {log['esperado']}\nObtido: {log['obtido']}\n"
+        
+    prompt_juiz = f"""
+    Como especialista em QA de IA, analise as amostras de execucao para a tarefa '{tarefa_nome}':
+    {resumo_casos}
     
-    prompt_juiz = f"Baseado nos resultados, recomende a melhor abordagem para '{tarefa}':\n{resumo}"
-    veredito = chamar_llm_com_metricas(client, MODEL_NAME, prompt_juiz, temperature=0.2)
+    Determine APENAS o nome da tecnica vencedora que demonstrou melhor aderencia ao esperado.
+    Sua resposta deve conter estritamente apenas uma dessas palavras: Zero-Shot, Few-Shot, Chain of Thought ou Persona.
+    """
     
-    print("\n🏆 RECOMENDAÇÃO FINAL:")
-    print(veredito['texto'])
+    res = enviar_e_medir(client, MODEL_NAME, prompt_juiz, temperature=0.1)
+    vencedora = res['texto'].strip()
+    
+    # Fallback caso a IA decida escrever um parágrafo
+    for t in ["Zero-Shot", "Few-Shot", "Chain of Thought", "Persona"]:
+        if t.lower() in vencedora.lower():
+            return t
+    return "Zero-Shot"
