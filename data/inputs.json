@@ -1,0 +1,23 @@
+{
+  "classificacao_sentimento": [
+    {"input": "Produto excelente, chegou rapido!", "esperado": "POSITIVO"},
+    {"input": "Veio quebrado, pessimo.", "esperado": "NEGATIVO"},
+    {"input": "Bom preco mas qualidade media.", "esperado": "MISTO"},
+    {"input": "A entrega demorou, mas o produto funciona bem.", "esperado": "MISTO"},
+    {"input": "Tanto faz, nao vi diferenca no dia a dia.", "esperado": "NEUTRO"}
+  ],
+  "extracao_dados": [
+    {"input": "Notebook Dell de R$3500 com pixels mortos", "esperado": "produto: Notebook Dell, preco: R$3500, defeito: pixels mortos"},
+    {"input": "Smartphone Samsung por R$1200 com tela trincada", "esperado": "produto: Smartphone Samsung, preco: R$1200, defeito: tela trincada"},
+    {"input": "Teclado Mecanico de R$250 com cabo partido", "esperado": "produto: Teclado Mecanico, preco: R$250, defeito: cabo partido"},
+    {"input": "Monitor LG por R$900 sem cabo de energia", "esperado": "produto: Monitor LG, preco: R$900, defeito: sem cabo de energia"},
+    {"input": "Mouse Gamer de R$150 com clique duplo", "esperado": "produto: Mouse Gamer, preco: R$150, defeito: clique duplo"}
+  ],
+  "geracao_email": [
+    {"input": "Cliente insatisfeito com atraso de 10 dias", "esperado": "Tom formal, pedido de desculpas e cupom de desconto"},
+    {"input": "Parabenizacao por 1 ano de assinatura premium", "esperado": "Tom festivo, agradecimento e brinde exclusivo"},
+    {"input": "Aviso de manutencao programada no sistema domingo", "esperado": "Tom informativo, horario de inicio e termino"},
+    {"input": "Tentativa de recuperacao de carrinho abandonado", "esperado": "Tom persuasivo, urgencia e frete gratis"},
+    {"input": "Confirmacao de recebimento de devolucao de item", "esperado": "Tom direto, prazo de estorno e encerramento"}
+  ]
+}
