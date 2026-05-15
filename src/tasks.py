@@ -21,7 +21,8 @@ TAREFAS = {
         "instrucao": "Extraia as entidades chaves do relato de defeito.",
         "formato_output": "Formato: produto: <nome>, preco: <valor>, defeito: <problema>.",
         "exemplos_fewshot": [
-            {"input": "Fone Sony de R$400 parou de funcionar o lado esquerdo", "output": "produto: Fone Sony, preco: R$400, defeito: parou de funcionar o lado esquerdo"}
+            {"input": "Fone Sony de R$400 parou de funcionar o lado esquerdo", "output": "produto: Fone Sony, preco: R$400, defeito: parou de funcionar o lado esquerdo"
+             "input": "Notebook Dell de R$3500 com pixels mortos na tela", "output": "produto Notebook Dell,preco: R$3500, defeito pixels mortos na tela"}
         ],
         "passos_cot": [
             "Localize o nome do produto comercial.",
