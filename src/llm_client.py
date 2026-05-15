@@ -14,4 +14,4 @@ def setup_ambiente():
         headers={'Authorization': f'Bearer {api_key}'}
     )
 
-MODEL_NAME = "gpt-oss:120b"
+MODEL_NAME = "llama3.2:3B"
